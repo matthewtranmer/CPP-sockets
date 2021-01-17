@@ -57,7 +57,7 @@ int main(){
     sockets::Socket client(AF_INET, SOCK_STREAM);
 
     //connect to the servers IP address and port
-    client.connect("127.0.0.1", 7050);
+    client.connect("127.0.0.1", 7000);
 
     //send a message to the server
     client.send("I am the client!");
