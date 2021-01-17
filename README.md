@@ -10,7 +10,7 @@ Any help would be appreciated to improve this library.
 
 ## EXAMPLES OF USE 
 This program will use the sockets library to make a simple TCP server using the AF_INET family. 
-``` 
+``` c++
 #include "Socket.h" 
 #include <iostream> 
 
@@ -48,7 +48,7 @@ int main(){
 ```
 
 This program will use the sockets library to make a simple TCP client using the AF_INET family.
-```
+``` c++
 #include "Socket.h"
 #include <iostream>
 
