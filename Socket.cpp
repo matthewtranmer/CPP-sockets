@@ -1,5 +1,6 @@
 #include "Socket.h"
 #include <unistd.h>
+#include <iostream>
 
 sockets::Socket::Socket(int family, int type, int protocol, int socket){
     this->family = family;
@@ -7,7 +8,10 @@ sockets::Socket::Socket(int family, int type, int protocol, int socket){
     this->protocol = protocol;
 
     if (socket == -404){
-        this->socket = ::socket(this->family, this->type, this->protocol);
+        if((this->socket = ::socket(this->family, this->type, this->protocol)) < 0){
+            std::cout << "Error - Socket creation failed" << std::endl;
+            throw 1;
+        }
     }
     else{
         this->socket = socket;
@@ -19,22 +23,43 @@ void sockets::Socket::bind(std::string ip, int port){
     address.sin_family = family;
     address.sin_port = htons(port);
 
-    ::inet_pton(AF_INET, ip.c_str(), &address.sin_addr);
-    ::bind(socket, (struct sockaddr *)&address, sizeof(address));
+    return_val = ::inet_pton(AF_INET, ip.c_str(), &address.sin_addr);
+    if (return_val <= 0){
+        std::cout << "Error - Invalid address" << std::endl;
+        throw 2;
+    }
+
+    return_val = ::bind(socket, (struct sockaddr *)&address, sizeof(address));
+    if(return_val < 0){
+        std::cout << "Error - Bind failed" << std::endl;
+        throw 3;
+    }
 }
 
 
 void sockets::Socket::setsockopt(int level, int optname, int value){
     const void* value_ptr = &value;
-    ::setsockopt(socket, level, optname, value_ptr, sizeof(value_ptr));
+
+    return_val = ::setsockopt(socket, level, optname, value_ptr, sizeof(value_ptr));
+    if(return_val < 0){
+        std::cout << "Error - Setsockopt failure" << std::endl;
+        throw 4;
+    }
 }
 
 void sockets::Socket::listen(int backlog){
-    ::listen(socket, backlog);
+    if(::listen(socket, backlog) < 0){
+        std::cout << "Error - Couldn't listen" << std::endl;
+        throw 5;
+    }
 }
 
 sockets::Socket sockets::Socket::accept(){
-    int connection = ::accept(socket, (struct sockaddr *)&address, (socklen_t*)&addresslen);
+    int connection;
+    if((connection = ::accept(socket, (struct sockaddr *)&address, (socklen_t*)&addresslen)) < 0){
+        std::cout << "Error - Couldn't accept connection" << std::endl;
+        throw 6;
+    }
     return Socket(family, type, protocol, connection);
 
 }
@@ -44,13 +69,25 @@ void sockets::Socket::connect(std::string ip, int port){
     address.sin_family = family;
     address.sin_port = htons(port);
 
-    ::inet_pton(AF_INET, ip.c_str(), &address.sin_addr);
-    ::connect(socket, (struct sockaddr *)&address, sizeof(address));
+    return_val = ::inet_pton(AF_INET, ip.c_str(), &address.sin_addr);
+    if (return_val <= 0){
+        std::cout << "Error - Invalid address" << std::endl;
+        throw 7;
+    }
+
+    return_val = ::connect(socket, (struct sockaddr *)&address, sizeof(address));
+    if (return_val < 0){
+        std::cout << "Error - Connection failed" << std::endl;
+        throw 8;
+    }
 }
 
 //misc modules
 void sockets::Socket::close(){
-    ::close(socket);
+    if(::close(socket) < 0){
+        std::cout << "Error - Connection failed to close" << std::endl;
+        throw 9;
+    }
 }
 
 void sockets::Socket::send(std::string data, int flags){
