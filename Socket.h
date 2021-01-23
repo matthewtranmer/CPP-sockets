@@ -13,6 +13,7 @@ namespace sockets{
             int protocol;
             int port;
             int addresslen;
+            int return_val;
 
             struct ::sockaddr_in address;
 
