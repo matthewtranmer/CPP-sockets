@@ -3,7 +3,7 @@ Sockets is an open-source C++ library that was designed to act like the python s
 Sockets allows you to create multiple socket objects and communicate with them independently. 
 
 ## DISCLAMER 
-The current version of this library should be used with extreme caution as the writer has made it to learn more about how C++ and sockets work. 
+The current version of this library should be used with caution as it isn't fully finished yet. 
 It has only been tested using the AF_INET family, the TCP protocol and on Ubuntu. 
 I would highly recommend you check through the code before implementing it in your program. 
 Any help would be appreciated to improve this library. 
